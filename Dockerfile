@@ -1,7 +1,7 @@
 # Build stage
 FROM node:18.10-slim
 
-LABEL maintainer="Christian Schäfer <lonelessart@gmail.com> (@lonelesscodes)"
+# LABEL maintainer="Christian Schäfer <lonelessart@gmail.com> (@lonelesscodes)"
 
 RUN apt update \
     && apt install -y \
