@@ -100,9 +100,13 @@ async function scopeAll(interaction: Discord.ChatInputCommandInteraction): Promi
     ) {
         const user_slots = await CustomSample.countSlots(interaction.user.id);
 
-        await reply(generateSampleMessage(
-            user_samples, `${interaction.user.username}'s Samples`, interaction.user.avatarURL({ size: 32 }), user_slots, false,
-        ));
+        for (let i = 0; i < user_samples.length / 25; i++) {
+            // console.log(arr);
+            await reply(generateSampleMessage(
+                user_samples.slice(i*25, i*25+25), `${interaction.user.username}'s Samples`, interaction.user.avatarURL({ size: 32 }), user_slots, false,
+            ));
+          }
+        
     }
 }
 
