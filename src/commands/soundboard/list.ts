@@ -169,7 +169,7 @@ async function scopeUser(interaction: Discord.ChatInputCommandInteraction): Prom
     for (let i = 0; i < samples.length / 25; i++) {
         // console.log(arr);
         await reply(generateSampleMessage(
-            samples.slice(i*25, i*25+25), `${interaction.user.username}'s Samples`, interaction.user.avatarURL({ size: 32 }), user_slots, false,
+            samples.slice(i*25, i*25+25), `${interaction.user.username}'s Samples`, interaction.user.avatarURL({ size: 32 }), slots, false,
         ));
     }
 }
