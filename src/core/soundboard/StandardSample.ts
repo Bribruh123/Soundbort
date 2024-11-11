@@ -200,7 +200,7 @@ export class StandardSample extends AbstractSample implements SoundboardStandard
         await fs.unlink(sample.file);
     }
 
-    static MAX_SLOTS = 25;
+    static MAX_SLOTS = 50;
 }
 
 await mkdir(StandardSample.BASE, { recursive: true, mode: 0o0777 });

@@ -77,6 +77,8 @@ In the root folder create an `.env` file based on the `.env.template` file and f
 ### Running
 
 ```sh
+source ~/.bashrc
+
 # run for development, run on ts-node
 npm run dev
 
