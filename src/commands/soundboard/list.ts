@@ -30,7 +30,7 @@ function generateSampleButtons(samples: CustomSample[] | StandardSample[]): Disc
             .setLabel(sample.name)
             .setStyle(Discord.ButtonStyle.Primary);
 
-        const row = Math.floor(i / 6);
+        const row = Math.floor(i / 5);
         if (!rows[row]) rows[row] = new Discord.ActionRowBuilder();
 
         rows[row].addComponents(button);
