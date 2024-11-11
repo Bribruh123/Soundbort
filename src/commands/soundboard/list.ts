@@ -105,7 +105,7 @@ async function scopeAll(interaction: Discord.ChatInputCommandInteraction): Promi
             await reply(generateSampleMessage(
                 user_samples.slice(i*25, i*25+25), `${interaction.user.username}'s Samples`, interaction.user.avatarURL({ size: 32 }), user_slots, false,
             ));
-          }
+        }
         
     }
 }
@@ -149,13 +149,29 @@ async function scopeUser(interaction: Discord.ChatInputCommandInteraction): Prom
     const samples = await CustomSample.getUserSamples(interaction.user.id);
     const slots = await CustomSample.countSlots(interaction.user.id);
 
+    const reply = (opts: Discord.InteractionReplyOptions & Discord.MessageCreateOptions) => {
+        return interaction.replied ? interaction.channel?.send(opts) : interaction.reply(opts);
+    };
+
+    // if (samples.length === 0) {
+    //     return replyEmbedEphemeral("You don't have any sound clips in your soundboard. Add them with `/upload`.", EmbedType.Info);
+    // }
+
+    // return generateSampleMessage(
+    //     samples, `${interaction.user.username}'s Samples`, interaction.user.avatarURL({ size: 32 }), slots,
+    // );
+
     if (samples.length === 0) {
-        return replyEmbedEphemeral("You don't have any sound clips in your soundboard. Add them with `/upload`.", EmbedType.Info);
+        await reply(replyEmbedEphemeral("You don't have any sound clips in your soundboard. Add them with `/upload`.", EmbedType.Info));
+        return;
     }
 
-    return generateSampleMessage(
-        samples, `${interaction.user.username}'s Samples`, interaction.user.avatarURL({ size: 32 }), slots,
-    );
+    for (let i = 0; i < samples.length / 25; i++) {
+        // console.log(arr);
+        await reply(generateSampleMessage(
+            samples.slice(i*25, i*25+25), `${interaction.user.username}'s Samples`, interaction.user.avatarURL({ size: 32 }), user_slots, false,
+        ));
+    }
 }
 
 export function install({ registry }: CmdInstallerArgs): void {
