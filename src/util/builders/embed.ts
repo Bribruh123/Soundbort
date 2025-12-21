@@ -34,12 +34,12 @@ export function createEmbed(desc?: string, type: EmbedType = EmbedType.Basic, em
     return embed;
 }
 
-export function replyEmbed(desc?: string, type?: EmbedType, emoji?: string): Pick<Discord.InteractionReplyOptions, "embeds"> {
+export function replyEmbed(desc?: string, type?: EmbedType, emoji?: string): Discord.InteractionReplyOptions {
     return {
         embeds: [createEmbed(desc, type, emoji)],
     };
 }
-export function replyEmbedEphemeral(desc?: string, type?: EmbedType, emoji?: string): Pick<Discord.InteractionReplyOptions, "embeds" | "ephemeral"> {
+export function replyEmbedEphemeral(desc?: string, type?: EmbedType, emoji?: string): Discord.InteractionReplyOptions {
     return {
         ...replyEmbed(desc, type, emoji),
         ephemeral: true,
