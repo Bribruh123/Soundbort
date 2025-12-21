@@ -1,8 +1,8 @@
 import { fileURLToPath } from "node:url";
 import * as util from "node:util";
 import chalk, { ChalkInstance, ColorName, ModifierName } from "chalk";
-import winston from "winston";
-import "winston-daily-rotate-file";
+import { createLogger, format, transports } from "winston";
+import DailyRotateFile from "winston-daily-rotate-file";
 
 import { ENVIRONMENT, EnvironmentStages, LOGS_DIR } from "./config.js";
 
@@ -34,22 +34,22 @@ const rotate_file_opts = {
     json: true,
 };
 
-const Logger = winston.createLogger({
+const Logger = createLogger({
     levels,
     level: "debug",
-    format: winston.format.combine(
-        winston.format.timestamp({ format: "YYYY-MM-DD HH:mm:ss.SSS" }),
-        winston.format.errors({ stack: true }),
-        winston.format.splat(),
-        winston.format.json(),
+    format: format.combine(
+        format.timestamp({ format: "YYYY-MM-DD HH:mm:ss.SSS" }),
+        format.errors({ stack: true }),
+        format.splat(),
+        format.json(),
     ),
     transports: [
-        new winston.transports.DailyRotateFile({
+        new DailyRotateFile({
             ...rotate_file_opts,
             filename: `${fileURLToPath(LOGS_DIR)}/%DATE%-bot-error.log`,
             level: "error",
         }),
-        new winston.transports.DailyRotateFile({
+        new DailyRotateFile({
             ...rotate_file_opts,
             filename: `${fileURLToPath(LOGS_DIR)}/%DATE%-bot-combined.log`,
         }),
@@ -119,9 +119,9 @@ function printf(info: any): string {
 }
 
 if (ENVIRONMENT !== EnvironmentStages.PROD) {
-    Logger.add(new winston.transports.Console({
-        format: winston.format.combine(
-            winston.format.printf(printf),
+    Logger.add(new transports.Console({
+        format: format.combine(
+            format.printf(printf),
         ),
     }));
 }
