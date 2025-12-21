@@ -1,3 +1,5 @@
+import * as Discord from "discord.js";
+
 import { SAMPLE_TYPES } from "../../const.js";
 
 import { CmdInstallerArgs } from "../../util/types.js";
@@ -9,6 +11,11 @@ import { createStringOption } from "../../modules/commands/options/string.js";
 import { replyEmbedEphemeral, replyEmbed, EmbedType } from "../../util/builders/embed.js";
 
 import { getLastAttachment, upload, UploadErrors } from "../../core/soundboard/methods/upload.js";
+
+function toEditReplyOptions(options: Discord.InteractionReplyOptions): Discord.InteractionEditReplyOptions {
+    const { flags: _flags, ephemeral: _ephemeral, ...rest } = options;
+    return rest as Discord.InteractionEditReplyOptions;
+}
 
 export function install({ registry, admin }: CmdInstallerArgs): void {
     registry.addCommand(new SlashCommand({
@@ -59,7 +66,7 @@ export function install({ registry, admin }: CmdInstallerArgs): void {
             }
 
             for await (const status of upload(attachment, interaction.guild, interaction.user, name, scope)) {
-                await interaction.editReply(status);
+                await interaction.editReply(toEditReplyOptions(status));
             }
         },
     }));

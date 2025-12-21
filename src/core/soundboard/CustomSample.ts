@@ -187,7 +187,7 @@ export class CustomSample extends AbstractSample implements SoundboardCustomSamp
         return new URL(id + CustomSample.EXT, CustomSample.BASE);
     }
 
-    static BASE = new URL(AbstractSample.BASE);
+    static BASE = new URL(AbstractSample.BASE.href);
 
     // //////// STATIC DB MANAGEMENT METHODS ////////
 
@@ -383,7 +383,7 @@ export class CustomSample extends AbstractSample implements SoundboardCustomSamp
      */
     static async removeCompletely(sample: CustomSample): Promise<void> {
         await models.custom_sample.deleteOne({ id: sample.id });
-        await fs.unlink(sample.file);
+        await fs.unlink(fileURLToPath(sample.file));
     }
 
     /**
