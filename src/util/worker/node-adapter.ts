@@ -8,31 +8,38 @@
 
 import { Endpoint } from "comlink";
 
+type NodeMessageEvent = { data: unknown };
+type NodeEventListener = ((event: NodeMessageEvent) => void) | { handleEvent(event: NodeMessageEvent): void };
+
 export interface NodeEndpoint {
     postMessage(message: any, transfer?: any[]): void;
     on(
         type: string,
-        listener: EventListenerOrEventListenerObject,
+        listener: NodeEventListener,
         options?: unknown
     ): void;
     off(
         type: string,
-        listener: EventListenerOrEventListenerObject,
+        listener: NodeEventListener,
         options?: unknown
     ): void;
     start?(): void;
 }
 
+function isListenerObject(listener: NodeEventListener): listener is { handleEvent(event: NodeMessageEvent): void } {
+    return typeof listener === "object" && listener !== null && "handleEvent" in listener;
+}
+
 export default function nodeEndpoint(nep: NodeEndpoint): Endpoint {
-    const listeners = new WeakMap();
+    const listeners = new WeakMap<NodeEventListener, (data: unknown) => void>();
     return {
         postMessage: nep.postMessage.bind(nep),
         addEventListener: (_, eh) => {
             const l = (data: any) => {
-                if ("handleEvent" in eh) {
-                    eh.handleEvent({ data } as MessageEvent);
+                if (isListenerObject(eh)) {
+                    eh.handleEvent({ data } as NodeMessageEvent);
                 } else {
-                    eh({ data } as MessageEvent);
+                    eh({ data } as NodeMessageEvent);
                 }
             };
             nep.on("message", l);

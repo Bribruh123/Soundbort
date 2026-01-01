@@ -71,7 +71,7 @@ async function scopeAll(interaction: Discord.ChatInputCommandInteraction): Promi
     const user_samples = await CustomSample.getUserSamples(interaction.user.id);
 
     const reply = (opts: Discord.InteractionReplyOptions & Discord.MessageCreateOptions) => {
-        return interaction.replied ? interaction.channel?.send(opts) : interaction.reply(opts);
+        return interaction.replied ? interaction.followUp(opts) : interaction.reply(opts);
     };
 
     if (standard_samples.length > 0) {
@@ -150,7 +150,7 @@ async function scopeUser(interaction: Discord.ChatInputCommandInteraction): Prom
     const slots = await CustomSample.countSlots(interaction.user.id);
 
     const reply = (opts: Discord.InteractionReplyOptions & Discord.MessageCreateOptions) => {
-        return interaction.replied ? interaction.channel?.send(opts) : interaction.reply(opts);
+        return interaction.replied ? interaction.followUp(opts) : interaction.reply(opts);
     };
 
     // if (samples.length === 0) {

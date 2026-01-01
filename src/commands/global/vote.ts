@@ -43,9 +43,10 @@ async function sendMessageReply(client: Discord.Client<true>, slot: SingleSoundb
         text = `${Discord.userMention(slot.fromUserId)} gave ${Discord.userMention(slot.ownerId)} ${slot_text}.`;
     }
     text += ` Now it has ${new_slots} slots.`;
-    const textChannel = channel as Discord.TextBasedChannel;
 
-    await textChannel.send({
+    const sendableChannel = channel as Discord.SendableChannels;
+
+    await sendableChannel.send({
         ...replyEmbed(text),
         reply: {
             messageReference: doc.messageId,

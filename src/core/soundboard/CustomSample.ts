@@ -187,7 +187,7 @@ export class CustomSample extends AbstractSample implements SoundboardCustomSamp
         return new URL(id + CustomSample.EXT, CustomSample.BASE);
     }
 
-    static BASE = new URL(AbstractSample.BASE);
+    static BASE = new URL(AbstractSample.BASE.href);
 
     // //////// STATIC DB MANAGEMENT METHODS ////////
 

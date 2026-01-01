@@ -4,13 +4,15 @@ import { WithAutocompleteOrChoice, WithAutocompleteOrChoicesOptionData } from ".
 export function createNumberOption(
     opts: WithAutocompleteOrChoice<Omit<Discord.APIApplicationCommandNumberOption, "type">, number>,
 ): WithAutocompleteOrChoicesOptionData<Discord.APIApplicationCommandNumberOption, number> {
+    const { autocomplete, ...rest } = opts as typeof opts & { autocomplete?: typeof opts["autocomplete"] };
+
     return {
         type: Discord.ApplicationCommandOptionType.Number,
         data: {
             type: Discord.ApplicationCommandOptionType.Number,
-            ...opts,
-            autocomplete: !!opts.autocomplete,
+            ...rest,
+            ...(autocomplete ? { autocomplete: true } : {}),
         },
-        autocomplete: opts.autocomplete,
+        autocomplete,
     };
 }
