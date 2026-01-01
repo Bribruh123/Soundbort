@@ -1,6 +1,6 @@
 import * as Discord from "discord.js";
 
-import { SharedCommandOptions, MiddlewareFunc, SimpleFunc } from "./AbstractSharedCommand.js";
+import { SharedCommandOptions, MiddlewareFunc, SimpleFunc, sendInteractionResponse } from "./AbstractSharedCommand.js";
 import { SlashCommandAutocompleteMixin } from "./mixins/SlashCommandAutocompleteMixin.js";
 import { CommandOptionData } from "./options/index.js";
 import { SlashCommandPermissions } from "./permission/SlashCommandPermissions.js";
@@ -122,7 +122,7 @@ export class SlashCommand extends SlashCommandAutocompleteMixin {
         const result = await this.func?.(interaction); // Optional chaining (?.), the function will only be called if this.func property is not nullish
         if (!result || interaction.replied) return;
 
-        await (interaction.deferred ? interaction.editReply(result) : interaction.reply(result));
+        await sendInteractionResponse(interaction, result);
     }
 
     async run(interaction: Discord.ChatInputCommandInteraction): Promise<void> {

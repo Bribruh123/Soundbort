@@ -1,6 +1,6 @@
 import * as Discord from "discord.js";
 
-import { SharedCommandOptions, SimpleFunc } from "./AbstractSharedCommand.js";
+import { SharedCommandOptions, SimpleFunc, sendInteractionResponse } from "./AbstractSharedCommand.js";
 import { SlashCommandAutocompleteMixin } from "./mixins/SlashCommandAutocompleteMixin.js";
 import { CommandOptionData } from "./options/index.js";
 
@@ -46,6 +46,6 @@ export class SlashSubCommand extends SlashCommandAutocompleteMixin {
         const result = await this.func(interaction); // Optional chaining (?.), the function will only be called if this.func property is not nullish
         if (!result || interaction.replied) return;
 
-        await (interaction.deferred ? interaction.editReply(result) : interaction.reply(result));
+        await sendInteractionResponse(interaction, result);
     }
 }

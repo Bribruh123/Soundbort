@@ -6,6 +6,28 @@ export type SimpleFuncReturn = string | Discord.MessagePayload | Discord.Interac
 
 export type SimpleFunc = (interaction: Discord.ChatInputCommandInteraction) => Discord.Awaitable<SimpleFuncReturn>;
 
+export async function sendInteractionResponse(
+    interaction: Discord.ChatInputCommandInteraction,
+    result: NonNullable<SimpleFuncReturn>,
+): Promise<void> {
+    if (typeof result === "string" || result instanceof Discord.MessagePayload) {
+        if (interaction.deferred) {
+            await interaction.editReply(result);
+        } else {
+            await interaction.reply(result);
+        }
+        return;
+    }
+
+    if (interaction.deferred) {
+        const { ephemeral, ...editBase } = result as Discord.InteractionReplyOptions & { ephemeral?: boolean };
+        await interaction.editReply(editBase as Discord.InteractionEditReplyOptions);
+        return;
+    }
+
+    await interaction.reply(result);
+}
+
 export interface SharedCommandOptions {
     /**
      * 1-32 character name; `CHAT_INPUT` command names must be all lowercase matching `^[-_\p{L}\p{N}\p{sc=Deva}\p{sc=Thai}]{1,32}$`

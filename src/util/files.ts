@@ -1,7 +1,8 @@
 import fs from "node:fs";
+import * as http from "node:http";
+import * as https from "node:https";
 import { pipeline } from "node:stream/promises";
-import { Readable } from "node:stream";
-import { ReadableStream } from "node:stream/web";
+import { URL } from "node:url";
 import disk from "diskusage";
 
 import Logger from "../log.js";
@@ -16,12 +17,41 @@ export async function isEnoughDiskSpace(): Promise<boolean> {
 }
 
 export async function downloadFile(url: string, out_file: string | URL): Promise<void> {
-    const res = await fetch(url);
-    if (!res.ok) throw new Error("Resource not accessible");
-    if (!res.body) throw new Error("fetch.Response.body is undefined");
+    const target = new URL(url);
+
+    const getResponse = async (current: URL, redirects = 0): Promise<http.IncomingMessage> => {
+        if (redirects > 5) throw new Error("Too many redirects while downloading file");
+
+        const handler = current.protocol === "http:" ? http : https;
+
+        return await new Promise<http.IncomingMessage>((resolve, reject) => {
+            const request = handler.get(current, res => {
+                const status = res.statusCode ?? 0;
+
+                if (status >= 300 && status < 400 && res.headers.location) {
+                    res.resume();
+                    const nextUrl = new URL(res.headers.location, current);
+                    getResponse(nextUrl, redirects + 1).then(resolve, reject);
+                    return;
+                }
+
+                if (status < 200 || status >= 300) {
+                    res.resume();
+                    reject(new Error(`Failed to download file. HTTP status: ${status}`));
+                    return;
+                }
+
+                resolve(res);
+            });
+
+            request.on("error", reject);
+        });
+    };
+
+    const response = await getResponse(target);
 
     await pipeline(
-        Readable.fromWeb(res.body as ReadableStream<Uint8Array>), // ? unfortunately the ReadableStream implementations don't match
+        response,
         fs.createWriteStream(out_file),
     );
 }
