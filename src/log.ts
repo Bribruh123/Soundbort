@@ -2,7 +2,7 @@ import { fileURLToPath } from "node:url";
 import * as util from "node:util";
 import chalk, { ChalkInstance, ColorName, ModifierName } from "chalk";
 import { createLogger, format, transports } from "winston";
-import DailyRotateFile from "winston-daily-rotate-file/daily-rotate-file.js";
+import DailyRotateFile from "winston-daily-rotate-file";
 
 import { ENVIRONMENT, EnvironmentStages, LOGS_DIR } from "./config.js";
 
