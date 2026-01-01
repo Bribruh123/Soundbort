@@ -15,6 +15,8 @@ import { CustomSample } from "../CustomSample.js";
 import { StandardSample } from "../StandardSample.js";
 import { EmbedType, replyEmbed } from "../../../util/builders/embed.js";
 
+type InteractionReplyAndEditOptions = Discord.InteractionReplyOptions & Discord.InteractionEditReplyOptions;
+
 const ffprobe = promisify(ffmpeg.ffprobe) as (file: string) => Promise<FfprobeData>;
 
 const log = Logger.child({ label: "Sample => Uploader" });
@@ -84,12 +86,12 @@ async function generateId(retries: number = 5) {
     }
 }
 
-async function failed(desc: string) {
+async function failed(desc: string): Promise<InteractionReplyAndEditOptions> {
     await temp.cleanup();
-    return replyEmbed(desc, EmbedType.Error);
+    return replyEmbed(desc, EmbedType.Error) as InteractionReplyAndEditOptions;
 }
-function status(desc: string) {
-    return replyEmbed(desc, EmbedType.Basic, "🔄");
+function status(desc: string): InteractionReplyAndEditOptions {
+    return replyEmbed(desc, EmbedType.Basic, "🔄") as InteractionReplyAndEditOptions;
 }
 
 /**
@@ -109,7 +111,7 @@ export async function* upload(
     user: Discord.User,
     name: string,
     scope: SAMPLE_TYPES.USER | SAMPLE_TYPES.SERVER | SAMPLE_TYPES.STANDARD,
-): AsyncGenerator<Discord.InteractionReplyOptions, void, void> {
+): AsyncGenerator<InteractionReplyAndEditOptions, void, void> {
     try {
         if (!await isEnoughDiskSpace()) {
             return yield failed(UploadErrors.OutOfSpace);
@@ -275,7 +277,7 @@ export async function* upload(
             });
         }
 
-        yield sample.toEmbed({ show_timestamps: false, description: "Successfully added!", type: EmbedType.Success });
+        yield sample.toEmbed({ show_timestamps: false, description: "Successfully added!", type: EmbedType.Success }) as InteractionReplyAndEditOptions;
     } catch (error) {
         log.debug(error);
         yield failed(UploadErrors.General);
