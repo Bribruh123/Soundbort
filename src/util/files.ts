@@ -1,19 +1,34 @@
 import fs from "node:fs";
+import { promises as fsPromises } from "node:fs";
 import * as http from "node:http";
 import * as https from "node:https";
 import { pipeline } from "node:stream/promises";
 import { URL } from "node:url";
-import disk from "diskusage";
 
 import Logger from "../log.js";
 
 const log = Logger.child({ label: "util => files" });
 
 export async function isEnoughDiskSpace(): Promise<boolean> {
-    const info = await disk.check("/");
-    const yes = info.available > 1000 * 1000 * 1000;
-    if (!yes) log.warn("RUNNING OUT OF DISK SPACE");
-    return yes;
+    const root = process.platform === "win32"
+        ? `${process.env.SYSTEMDRIVE ?? "C:"}\\`
+        : "/";
+
+    try {
+        const stats = await fsPromises.statfs(root, { bigint: true });
+        const available = stats.bavail * stats.bsize;
+        const threshold = 1000n * 1000n * 1000n;
+        const hasEnough = available > threshold;
+
+        if (!hasEnough) {
+            log.warn(`RUNNING OUT OF DISK SPACE: ${available.toString()} bytes available at ${root}`);
+        }
+
+        return hasEnough;
+    } catch (error) {
+        log.warn("Failed to check disk space", error);
+        return true;
+    }
 }
 
 export async function downloadFile(url: string, out_file: string | URL): Promise<void> {
