@@ -50,7 +50,9 @@ export class AudioSubscription {
                     /*
                     The disconnect in this case may be recoverable, but we have no more remaining attempts - destroy.
 					*/
-                    this.voice_connection.destroy(); // destroy event will bubble up to execute this.stop()
+                    if (this.voice_connection.state.status !== Voice.VoiceConnectionStatus.Destroyed) {
+                        this.voice_connection.destroy(); // destroy event will bubble up to execute this.stop()
+                    }
                 }
             } else if (newState.status === Voice.VoiceConnectionStatus.Destroyed) {
                 /*
@@ -97,6 +99,8 @@ export class AudioSubscription {
 
     // Only for external use
     public destroy(): void {
-        this.voice_connection.destroy();
+        if (this.voice_connection.state.status !== Voice.VoiceConnectionStatus.Destroyed) {
+            this.voice_connection.destroy();
+        }
     }
 }

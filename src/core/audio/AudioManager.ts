@@ -99,10 +99,12 @@ class AudioManager extends TypedEmitter<AudioManagerEvents> {
             At this point, the voice connection has not entered the Ready state. We should make
             sure to destroy it.
             */
-            try {
-                subscription.voice_connection.destroy();
-            } catch (error) {
-                log.error("Error destroying Voice Connection", error);
+            if (subscription.voice_connection.state.status !== Voice.VoiceConnectionStatus.Destroyed) {
+                try {
+                    subscription.voice_connection.destroy();
+                } catch (destroyError) {
+                    log.error("Error destroying Voice Connection", destroyError);
+                }
             }
             return JoinFailureTypes.FailedTryAgain;
         }
