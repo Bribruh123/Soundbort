@@ -106,7 +106,7 @@ client.on("shardError", (error, shard_id) => { djs_log.error(`ID:${shard_id}`, e
 try {
     await database.connect();
 
-    const ready_promise = new Promise<Discord.Client<true>>(resolve => client.once("ready", resolve));
+    const ready_promise = new Promise<Discord.Client<true>>(resolve => client.once(Discord.Events.ClientReady, resolve));
 
     djs_log.info("Logging in...");
     await client.login(DISCORD_TOKEN);
