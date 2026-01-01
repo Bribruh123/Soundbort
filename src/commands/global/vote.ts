@@ -31,7 +31,7 @@ async function sendMessageReply(client: Discord.Client<true>, slot: SingleSoundb
         channel = await client.channels.fetch(doc.channelId, { allowUnknownGuild: true });
     }
 
-    if (!channel || !channel.isTextBased()) return;
+    if (!channel || !channel.isTextBased() || !("send" in channel)) return;
 
     // make text
     const slot_text = slot.count === 1 ? "one soundboard slot" : "two soundboard slots";
@@ -43,8 +43,9 @@ async function sendMessageReply(client: Discord.Client<true>, slot: SingleSoundb
         text = `${Discord.userMention(slot.fromUserId)} gave ${Discord.userMention(slot.ownerId)} ${slot_text}.`;
     }
     text += ` Now it has ${new_slots} slots.`;
+    const textChannel = channel as Discord.TextBasedChannel;
 
-    await channel.send({
+    await textChannel.send({
         ...replyEmbed(text),
         reply: {
             messageReference: doc.messageId,
