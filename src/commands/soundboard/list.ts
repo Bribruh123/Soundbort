@@ -70,7 +70,7 @@ async function scopeAll(interaction: Discord.ChatInputCommandInteraction): Promi
     const guild_samples = interaction.guildId ? await CustomSample.getGuildSamples(interaction.guildId) : [];
     const user_samples = await CustomSample.getUserSamples(interaction.user.id);
 
-    const reply = (opts: Discord.InteractionReplyOptions & Discord.MessageCreateOptions) => {
+    const reply = (opts: Discord.InteractionReplyOptions) => {
         return interaction.replied ? interaction.followUp(opts) : interaction.reply(opts);
     };
 
@@ -149,7 +149,7 @@ async function scopeUser(interaction: Discord.ChatInputCommandInteraction): Prom
     const samples = await CustomSample.getUserSamples(interaction.user.id);
     const slots = await CustomSample.countSlots(interaction.user.id);
 
-    const reply = (opts: Discord.InteractionReplyOptions & Discord.MessageCreateOptions) => {
+    const reply = (opts: Discord.InteractionReplyOptions) => {
         return interaction.replied ? interaction.followUp(opts) : interaction.reply(opts);
     };
 
