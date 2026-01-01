@@ -4,19 +4,13 @@ import { WithAutocompleteOrChoice, WithAutocompleteOrChoicesOptionData } from ".
 export function createIntegerOption(
     opts: WithAutocompleteOrChoice<Omit<Discord.APIApplicationCommandIntegerOption, "type">, number>,
 ): WithAutocompleteOrChoicesOptionData<Discord.APIApplicationCommandIntegerOption, number> {
-    const { autocomplete, ...option } = opts;
-    const data = {
-        type: Discord.ApplicationCommandOptionType.Integer,
-        ...option,
-    } as Discord.APIApplicationCommandIntegerOption;
-
-    if (autocomplete) {
-        data.autocomplete = true;
-    }
-
     return {
         type: Discord.ApplicationCommandOptionType.Integer,
-        data,
-        autocomplete,
+        data: {
+            type: Discord.ApplicationCommandOptionType.Integer,
+            ...opts,
+            autocomplete: !!opts.autocomplete,
+        },
+        autocomplete: opts.autocomplete,
     };
 }

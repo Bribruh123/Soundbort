@@ -31,7 +31,7 @@ async function sendMessageReply(client: Discord.Client<true>, slot: SingleSoundb
         channel = await client.channels.fetch(doc.channelId, { allowUnknownGuild: true });
     }
 
-    if (!channel?.isSendable()) return;
+    if (!channel || !channel.isTextBased()) return;
 
     // make text
     const slot_text = slot.count === 1 ? "one soundboard slot" : "two soundboard slots";
@@ -44,9 +44,8 @@ async function sendMessageReply(client: Discord.Client<true>, slot: SingleSoundb
     }
     text += ` Now it has ${new_slots} slots.`;
 
-    const payload = replyEmbed(text);
     await channel.send({
-        embeds: payload.embeds,
+        ...replyEmbed(text),
         reply: {
             messageReference: doc.messageId,
             failIfNotExists: true,
@@ -66,8 +65,7 @@ async function sendDM(client: Discord.Client<true>, slot: SingleSoundboardSlot, 
     }
     text += ` Now you have ${new_slots} slots.`;
 
-    const payload = replyEmbed(text);
-    await dm.send({ embeds: payload.embeds });
+    await dm.send(replyEmbed(text));
 }
 
 export function install({ client, registry }: CmdInstallerArgs): void {
