@@ -46,7 +46,7 @@ async function play(interaction: Discord.ChatInputCommandInteraction<"cached"> |
 
         StatsCollectorManager.incPlayedSamples(1);
 
-        await interaction.reply(replyEmbed(`🔊 Playing ${sample.name}`));
+        // await interaction.reply(replyEmbed(`🔊 Playing ${sample.name}`));
         await timeout(1500);
         await interaction.deleteReply().catch(doNothing);
     } catch (error) {
