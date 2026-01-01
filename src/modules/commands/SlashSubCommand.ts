@@ -9,17 +9,6 @@ export interface SlashSubCommandOptions extends SharedCommandOptions {
     func: SimpleFunc;
 }
 
-function toEditReplyPayload(
-    result: string | Discord.MessagePayload | Discord.InteractionReplyOptions,
-): string | Discord.MessagePayload | Discord.InteractionEditReplyOptions {
-    if (typeof result === "string" || result instanceof Discord.MessagePayload) {
-        return result;
-    }
-
-    const { flags: _flags, ephemeral: _ephemeral, ...rest } = result;
-    return rest as Discord.InteractionEditReplyOptions;
-}
-
 export class SlashSubCommand extends SlashCommandAutocompleteMixin {
     readonly data: Discord.APIApplicationCommandSubcommandOption;
 
@@ -57,10 +46,6 @@ export class SlashSubCommand extends SlashCommandAutocompleteMixin {
         const result = await this.func(interaction); // Optional chaining (?.), the function will only be called if this.func property is not nullish
         if (!result || interaction.replied) return;
 
-        if (interaction.deferred) {
-            await interaction.editReply(toEditReplyPayload(result));
-        } else {
-            await interaction.reply(result);
-        }
+        await (interaction.deferred ? interaction.editReply(result) : interaction.reply(result));
     }
 }

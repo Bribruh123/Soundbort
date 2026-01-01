@@ -47,7 +47,7 @@ function generateSampleMessage(
     iconUrl: string | null,
     slots?: number,
     joinNotice: boolean = true,
-): Discord.InteractionReplyOptions {
+): Pick<Discord.InteractionReplyOptions, "embeds" | "components"> {
     const rows = generateSampleButtons(samples);
 
     const embed = createEmbed().setAuthor({
@@ -70,25 +70,25 @@ async function scopeAll(interaction: Discord.ChatInputCommandInteraction): Promi
     const guild_samples = interaction.guildId ? await CustomSample.getGuildSamples(interaction.guildId) : [];
     const user_samples = await CustomSample.getUserSamples(interaction.user.id);
 
-    const respond = (opts: Discord.InteractionReplyOptions | string | Discord.MessagePayload) => {
-        return interaction.deferred || interaction.replied ? interaction.followUp(opts) : interaction.reply(opts);
+    const reply = (opts: Discord.InteractionReplyOptions & Discord.MessageCreateOptions) => {
+        return interaction.replied ? interaction.channel?.send(opts) : interaction.reply(opts);
     };
 
     if (standard_samples.length > 0) {
-        await respond(generateSampleMessage(
+        await reply(generateSampleMessage(
             standard_samples, "Standard Samples", client.user.avatarURL({ size: 32 }),
         ));
     }
 
     if (user_samples.length + guild_samples.length === 0) {
-        await respond(replyEmbedEphemeral("You don't have any sound clips in your soundboard. Add them with `/upload`.", EmbedType.Info));
+        await reply(replyEmbedEphemeral("You don't have any sound clips in your soundboard. Add them with `/upload`.", EmbedType.Info));
         return;
     }
 
     if (guild_samples.length > 0 && interaction.guild) {
         const guild_slots = interaction.guildId ? await CustomSample.countSlots(interaction.guildId) : 0;
 
-        await respond(generateSampleMessage(
+        await reply(generateSampleMessage(
             guild_samples, `${interaction.guild.name}'s Server Samples`, interaction.guild.iconURL({ size: 32 }), guild_slots, false,
         ));
     }
@@ -102,7 +102,7 @@ async function scopeAll(interaction: Discord.ChatInputCommandInteraction): Promi
 
         for (let i = 0; i < user_samples.length / 25; i++) {
             // console.log(arr);
-            await respond(generateSampleMessage(
+            await reply(generateSampleMessage(
                 user_samples.slice(i*25, i*25+25), `${interaction.user.username}'s Samples`, interaction.user.avatarURL({ size: 32 }), user_slots, false,
             ));
         }
@@ -149,8 +149,8 @@ async function scopeUser(interaction: Discord.ChatInputCommandInteraction): Prom
     const samples = await CustomSample.getUserSamples(interaction.user.id);
     const slots = await CustomSample.countSlots(interaction.user.id);
 
-    const respond = (opts: Discord.InteractionReplyOptions | string | Discord.MessagePayload) => {
-        return interaction.deferred || interaction.replied ? interaction.followUp(opts) : interaction.reply(opts);
+    const reply = (opts: Discord.InteractionReplyOptions & Discord.MessageCreateOptions) => {
+        return interaction.replied ? interaction.channel?.send(opts) : interaction.reply(opts);
     };
 
     // if (samples.length === 0) {
@@ -162,13 +162,13 @@ async function scopeUser(interaction: Discord.ChatInputCommandInteraction): Prom
     // );
 
     if (samples.length === 0) {
-        await respond(replyEmbedEphemeral("You don't have any sound clips in your soundboard. Add them with `/upload`.", EmbedType.Info));
+        await reply(replyEmbedEphemeral("You don't have any sound clips in your soundboard. Add them with `/upload`.", EmbedType.Info));
         return;
     }
 
     for (let i = 0; i < samples.length / 25; i++) {
         // console.log(arr);
-        await respond(generateSampleMessage(
+        await reply(generateSampleMessage(
             samples.slice(i*25, i*25+25), `${interaction.user.username}'s Samples`, interaction.user.avatarURL({ size: 32 }), slots, false,
         ));
     }

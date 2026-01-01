@@ -1,5 +1,5 @@
 # Build stage
-FROM node:20.18.0-slim
+FROM node:18.10-slim
 
 # LABEL maintainer="Christian Schäfer <lonelessart@gmail.com> (@lonelesscodes)"
 
@@ -15,8 +15,7 @@ RUN apt update \
         libgif-dev \
         librsvg2-dev \
         curl \
-        ffmpeg \
-        python3
+        ffmpeg
 
 WORKDIR /app
 

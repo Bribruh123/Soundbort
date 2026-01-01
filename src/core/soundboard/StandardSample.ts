@@ -183,7 +183,7 @@ export class StandardSample extends AbstractSample implements SoundboardStandard
     static async import(sample: AbstractSample): Promise<StandardSample> {
         const file = StandardSample.generateFilePath(sample.name);
 
-        await fs.copyFile(fileURLToPath(sample.file), fileURLToPath(file));
+        await fs.copyFile(sample.file, file);
 
         const new_sample = await StandardSample.create({
             name: sample.name,
@@ -197,7 +197,7 @@ export class StandardSample extends AbstractSample implements SoundboardStandard
 
     static async remove(sample: StandardSample): Promise<void> {
         await models.standard_sample.deleteOne({ name: sample.name });
-        await fs.unlink(fileURLToPath(sample.file));
+        await fs.unlink(sample.file);
     }
 
     static MAX_SLOTS = 50;
