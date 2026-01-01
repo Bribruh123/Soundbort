@@ -4,15 +4,20 @@ import { WithAutocompleteOrChoice, WithAutocompleteOrChoicesOptionData } from ".
 export function createStringOption(
     opts: WithAutocompleteOrChoice<Omit<Discord.APIApplicationCommandStringOption, "type">, string>,
 ): WithAutocompleteOrChoicesOptionData<Discord.APIApplicationCommandStringOption, string> {
-    const { autocomplete, ...rest } = opts as typeof opts & { autocomplete?: typeof opts["autocomplete"] };
+    const { autocomplete, ...optionData } = opts as typeof opts & { autocomplete?: typeof opts["autocomplete"] };
+    const data = {
+        type: Discord.ApplicationCommandOptionType.String,
+        ...optionData,
+    } as Discord.APIApplicationCommandStringOption;
+
+    const commandAutocomplete = typeof autocomplete === "function" ? autocomplete : undefined;
+    if (commandAutocomplete) {
+        data.autocomplete = true;
+    }
 
     return {
         type: Discord.ApplicationCommandOptionType.String,
-        data: {
-            type: Discord.ApplicationCommandOptionType.String,
-            ...rest,
-            ...(autocomplete ? { autocomplete: true } : {}),
-        },
-        autocomplete,
+        data,
+        autocomplete: commandAutocomplete,
     };
 }
