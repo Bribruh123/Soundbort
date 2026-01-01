@@ -39,9 +39,9 @@ export function replyEmbed(desc?: string, type?: EmbedType, emoji?: string): Pic
         embeds: [createEmbed(desc, type, emoji)],
     };
 }
-export function replyEmbedEphemeral(desc?: string, type?: EmbedType, emoji?: string): Pick<Discord.InteractionReplyOptions, "embeds" | "ephemeral"> {
+export function replyEmbedEphemeral(desc?: string, type?: EmbedType, emoji?: string): Pick<Discord.InteractionReplyOptions, "embeds" | "flags"> {
     return {
         ...replyEmbed(desc, type, emoji),
-        ephemeral: true,
+        flags: Discord.MessageFlags.Ephemeral,
     };
 }

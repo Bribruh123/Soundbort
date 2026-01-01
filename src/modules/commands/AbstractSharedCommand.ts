@@ -20,7 +20,7 @@ export async function sendInteractionResponse(
     }
 
     if (interaction.deferred) {
-        const { ephemeral, ...editBase } = result as Discord.InteractionReplyOptions & { ephemeral?: boolean };
+        const { flags: _flags, ...editBase } = result as Discord.InteractionReplyOptions & { flags?: Discord.MessageFlagsResolvable };
         await interaction.editReply(editBase as Discord.InteractionEditReplyOptions);
         return;
     }
